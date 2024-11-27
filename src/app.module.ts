@@ -1,7 +1,10 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from './modules/auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from './modules/auth/entities/user.entity';
+import { UserEntity } from './modules/users/entities/user.entity';
+import { UsersModule } from './modules/users/users.module';
+import { SessionGuard } from './modules/auth/guards/session/session.guard';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -10,7 +13,15 @@ import { UserEntity } from './modules/auth/entities/user.entity';
       type: 'better-sqlite3',
       database: 'db.sqlite',
       entities: [UserEntity],
+      synchronize: true,
     }),
+    UsersModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: SessionGuard,
+    },
   ],
 })
 export class AppModule {}
